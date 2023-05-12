@@ -8,11 +8,13 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "three": "^0.152.2",
     "vue": "^2.6.11"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.13",
     "@vue/cli-service": "~4.5.13",
+    "glslify": "^7.1.1",
     "vue-template-compiler": "^2.6.11"
   },
   "browserslist": [

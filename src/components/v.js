@@ -1,0 +1,9 @@
+const v = `precision highp float;
+varying vec2 v_uv;
+void main() {
+    gl_Position = projectionMatrix *
+        modelViewMatrix *
+        vec4(position.xyz, 1.0);
+    v_uv = uv;
+}`
+export default v
