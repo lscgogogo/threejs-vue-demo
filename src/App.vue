@@ -1,7 +1,7 @@
 <template>
   <div class="player">
     <div>
-      <button @click="$refs.video.play()">播放</button>
+      <button @click="play">播放</button>
     </div>
     <video
       preload
@@ -13,7 +13,7 @@
     ></video>
 
     <canvas
-      style="width: 80%; height: 823px"
+      style="width: 100%; height: 100%"
       width="1920"
       height="823"
       ref="canvas"
@@ -21,36 +21,41 @@
   </div>
 </template>
 <script>
-import * as THREE from "three/build/three.module";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import * as THREE from 'three/build/three.module'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import DeviceOrientationControls from './components/DeviceOrientationControls.js'
+
 export default {
   name: 'App',
   data() {
     return {
       isPlay: false,
       canPlay: false,
-    };
+    }
   },
   methods: {
+    play() {
+      this.$refs.video.play()
+    },
     initOffScreenCanvas() {
-      this.videoCanvas = new OffscreenCanvas();
+      this.videoCanvas = new OffscreenCanvas()
     },
     initVideoTexture() {
-      this.videoTexture = new THREE.VideoTexture(this.$refs.video);
-      this.videoTexture.needsUpdate = true;
-      this.videoTexture.updateMatrix();
+      this.videoTexture = new THREE.VideoTexture(this.$refs.video)
+      this.videoTexture.needsUpdate = true
+      this.videoTexture.updateMatrix()
     },
     initRenderer() {
       this.renderer = new THREE.WebGLRenderer({
         canvas: this.$refs.canvas,
         antialias: true,
-      });
+      })
     },
     initScene() {
-      this.scene = new THREE.Scene();
+      this.scene = new THREE.Scene()
     },
     initMesh() {
-      this.geometry = new THREE.SphereGeometry(100, 32, 16);
+      this.geometry = new THREE.SphereGeometry(100, 32, 16)
       this.material = new THREE.ShaderMaterial({
         wireframe: false,
         side: THREE.DoubleSide,
@@ -58,42 +63,52 @@ export default {
         uniforms: {
           tex_0: new THREE.Uniform(this.videoTexture),
         },
-        vertexShader: require("@/components/v.js").default,
-        fragmentShader: require("@/components/f.js").default,
-      });
-      this.mesh = new THREE.Mesh(this.geometry, this.material);
+        vertexShader: require('@/components/v.js').default,
+        fragmentShader: require('@/components/f.js').default,
+      })
+      this.mesh = new THREE.Mesh(this.geometry, this.material)
     },
     initCamera() {
-      this.camera = new THREE.PerspectiveCamera(45, 1024 / 768, 1, 1000);
-      this.camera.position.z = 30;
-      this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-      this.controls.maxDistance = 100;
+      this.camera = new THREE.PerspectiveCamera(45, 1024 / 768, 1, 1000)
+      this.camera.position.z = 30
+      // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+      this.controls = new DeviceOrientationControls(this.camera)
+      document.body.appendChild(this.renderer.domElement)
+      this.controls.maxDistance = 100
 
-      this.controls.update();
+      this.controls.update()
       // const helper = new THREE.CameraHelper(this.camera);
       // this.scene.add(helper);
-      this.scene.add(this.camera);
+      this.scene.add(this.camera)
     },
     addMeshToScene() {
-      this.scene.add(this.mesh);
+      this.scene.add(this.mesh)
     },
     update() {
-      this.renderer.render(this.scene, this.camera);
-
-      requestAnimationFrame(this.update);
+      this.renderer.render(this.scene, this.camera)
+      this.controls.update()
+      requestAnimationFrame(this.update)
     },
   },
+
   mounted() {
-    this.initRenderer();
-    this.initScene();
-    this.initVideoTexture();
-    this.initMesh();
-    this.initCamera();
-    this.addMeshToScene();
-    this.update();
-    window.addEventListener('deviceorientation', function(event) {
-  console.log('alpha: ' + event.alpha + ', beta: ' + event.beta + ', gamma: ' + event.gamma);
-});
+    this.initRenderer()
+    this.initScene()
+    this.initVideoTexture()
+    this.initMesh()
+    this.initCamera()
+    this.addMeshToScene()
+    this.update()
+    window.addEventListener('deviceorientation', function (event) {
+      console.log(
+        'alpha: ' +
+          event.alpha +
+          ', beta: ' +
+          event.beta +
+          ', gamma: ' +
+          event.gamma
+      )
+    })
   },
-};
+}
 </script>
